@@ -31,5 +31,6 @@ npm install
 npm start
 ```
 
-2017 - CYTECH INFORMÁTICA
-Cainã Mello, Felipe da Silva Pinho, Marques do Nascimento Amaro
+**2017 - CYTECH INFORMÁTICA**
+
+por: **Cainã Mello, Felipe da Silva Pinho, Marques do Nascimento Amaro**
