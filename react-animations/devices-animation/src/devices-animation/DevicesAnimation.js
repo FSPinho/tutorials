@@ -1,14 +1,73 @@
+/**
+ * 
+ * 2017 - CYTECH INFORMÁTICA
+ * Cainã Mello, Felipe da Silva Pinho, Marques do Nascimento Amaro
+ * 
+ * 
+ * Fala, pessoal! Beleza?
+ * Eu sou Cainã Mello, membro da empresa de desenvolvimento de software
+ * Cytech Informática.
+ * 
+ * Nesse vídeo eu vou mostrar pra vocês como fazer uma animação de dispositivos
+ * usando React. Essa é apenas uma demonstração simples de como fazer, sintam-se 
+ * livres pra melhorar, adicionar mais elementos e usar nos seus projetos.
+ * 
+ * Antes de assistir a esse vídeo, é interessante que vocês já saibam o básico de CSS, 
+ * ECMAScript 2016 (ou javascrit 2016) e react. Eu recomendo também que vocês deem uma olhada rápida
+ * na documentação do React sobre animações, que tá disponível nesse link: 
+ * https://facebook.github.io/react-native/docs/animations.html
+ * Não precisa ler tudo, apenas o suficiente pra ter uma noção básica de como 
+ * a animação é construída
+ * 
+ * Pra criar o projeto eu usei o 'create-react-app', que pode ser encontrado nesse link:
+ * https://github.com/facebookincubator/create-react-app
+ * Após a criação do projeto, instalei o plugin react-native-web com o comando
+ * >> npm install react-native-web
+ * É esse plugin que vai nos dar o suporte a animação. Criei então o diretório devices-animation
+ * e, dentro do mesmo, criei arquivo DevidesAnimation.js, que vai conter o componente react que
+ * será animado.
+ * 
+ * Não esqueça de declarar o componente no arquico App.js (Aqui usamos o recurso flexbox para
+ * centralizar tudo na tela)
+ * 
+ * Agora vamos a implementação do componente!
+ */
+
+
+/**
+ * Aqui nos importamos as classes que necessárias
+ * Note que é o react-native-web que nos provém as classes Animated e Easing, 
+ * que usaremos na animação
+ */
 import React, { Component } from 'react'
 import { Animated, Easing } from 'react-native-web'
 
-const SIZE = 240 // Animation container size
-const RATIO = 1.7777 // Width/Height
+/**
+ * Tamanho do container da animação. Os dispositivos, desktop, tablet e celular terão suas dimensões
+ * calculadas em relação a essa medida.
+ */
+const SIZE = 240
 
-const DESKTOP = 'desktop' // Steps...
+/**
+ * Relação entre a altura e a largura dos dispositivos. É comum que as telas atuais apresentem
+ * uma proporção de 16/9 pixels, que é aproximadamente 1.7777 
+ */
+const RATIO = 1.7777
+
+/**
+ * Nome dos passos a serem executados. Aqui são armazenados em constantes apenas por questões de 
+ * organização
+ */
+const DESKTOP = 'desktop'
 const TABLET = 'tablet'
 const PHONE = 'phone'
 
-// Default div style
+/**
+ * Estilo das divs que serão usadas na animação. Todas apresentam uma borda vermelha de 2 pixels, 
+ * e terão as mesmas dimensões de seus elementos pais, que serão animados. Elas apresentam, também,
+ * um display flex, o que nos ajuda a distribuir e centralizar os elementos filhos verticalmente.
+ * Estou supondo aqui que você já tenha um conhecimento de CSS e de flexbox
+ */
 const STYLE = {
 	position: 'absolute',
 	top: 0, bottom: 0, left: 0, right: 0,
@@ -20,7 +79,14 @@ const STYLE = {
 	justifyContent: 'center'
 }
 
-// Animations steps
+/**
+ * Esses são os passos da animação. O primeiro passo, por exeplo, que se chama desktop, 
+ * guarda as medidas que darão a cada elemento o formato correto de um monitor desktop, 
+ * que contém bordas, uma tela, e um botão. Esses elemento representam com simplicidade
+ * a maioria dos dispositivos atuais. Note que todos os valores são setados em relação ao 
+ * valor da constante SIZE, assim poderemo mudar facilmente o tamanho da animalção, 
+ * inclusive, recebendo-o via props.
+ */
 const ANIM_STEPS = {
 	[DESKTOP]: {
 		boundsWidth: SIZE,
@@ -60,31 +126,30 @@ const ANIM_STEPS = {
 	},
 }
 
+/**
+ * Definição do componente animado
+ */
+
 export default class DevicesAnim extends Component {
 
 	constructor(props) {
 		super(props);
 		
 		/**
-		 * MAPPING THE ANIMATION STEPS
-		 * https://facebook.github.io/react-native/docs/animations.html
-		 */
-
-		/**
-		 * We want to get this state, with the 'desktop' step given the initial values
+		 * Aqui nós queremos mapear cada propriedade animada para um objeto 
+		 * do tipo Animated.Value
 		 * 
 		 * this.state = {
 		 *		boundsWidth: new Animated.View(SIZE),
 		 *		boundsHeight: new Animated.View(SIZE / RATIO),
-		 *		boundsRotation: new Animated.View(0), 
-		 *
-		 *		screenWidth: new Animated.View(SIZE * 0.95),
-		 *		screenHeight: new Animated.View(SIZE / RATIO * 0.75),
-		 *		screenMarginTop: new Animated.View(0),
-		 *		screenMarginBottom: new Animated.View(SIZE * 0.02),
-		 *
-		 *		circleSize: new Animated.View(SIZE * 0.05), 
-		 *	},
+		 *		...
+		 * },
+		 * 
+		 * Mas, para que não seja necessário fazer isso a todos os valores manualmete,
+		 * usaremos um atalho: percorreremos as chaves do objeto correspondente ao passo
+		 * inicial da animação, trabsformando os valores em objetos do tipo Animated.Value.
+		 * Note que obteremos um resultado igual ao mostrado acim, com a adição do atributo
+		 * currentStep, que indica qual o passo (desktop, tablet ou phone) atual da animação
 		 */
 
 		const initialStep = this.props.initialStep || DESKTOP
@@ -93,68 +158,113 @@ export default class DevicesAnim extends Component {
 		}
 		const step = ANIM_STEPS[initialStep]
 
-		/* Siving the step keys and values to state */
+		/* Percorrendo as chaves do objeto step */
 		Object.keys(step).map(k => {
 
-			/* E.g.: this.state[boundsWidth] = new Animated.Value( ... ) */
+			/** 
+			 * Convertendo os valores
+			 * Ex.: this.state[boundsWidth] = new Animated.Value( ... ) 
+			 */
 			this.state[k] = new Animated.Value(step[k])
 		})
 	}
 
+	/**
+	 * Método que modifica o passo atual da animação, sendo executado apenas
+	 * se o novo passo for diferente do antigo.
+	 */
 	changeStep = stepKey => {
 		if(stepKey === this.step) return
 
 		const step = ANIM_STEPS[stepKey]
+
+		/**
+		 * Criaremos uma animação para cada atributo a ser animado, armazenando
+		 * os objetos criados no array animations
+		 */
 		const animations = Object.keys(step).map(key => {
 			return Animated.timing(
-				/* Value that will be animated */
+				
+				/* Valor a ser animado. Ex.: this.state.boundsWidth */
 				this.state[key], 
 				{ 
-					/* Final animation value */
+					/* Valor para o qual a animação irá convergir */
 					toValue: step[key], 
 
-					/* Animation type */
+					/* Tipo de função usada na animação */
 					easing: Easing.inOut(Easing.cubic) 
 				}
 			)
 		})
 
-		/* Changing the current state to fire the render method */
+		/** 
+		 * Aqui nós atualizamos o estado com o novo passo da animação e, como
+		 * consequência, provocamos a chamada do método render().
+		 */
 		this.setState({ step: stepKey })
 
-		/* Starting all animations */
+		/**
+		 * Iniciando as animações criadas anteriormente. Note que todas ocorrerão 
+		 * paralelamente.
+		 */
         Animated.parallel(animations).start()
 	}
 
-	componentWillMount() {
+	/**
+	 * Usaremos este método do cíclo de vida do componente par dar início
+	 * ao loop responsável por trocar constantemente o passo atual da animação.
+	 * O método componentDidMount é chamado uma vez após a primeira renderização do 
+	 * componente na tela
+	 */
+	componentDidMount() {
+		/**
+		 * Armazenando os passos da animação em um array e iniciando o indice que será 
+		 * usado para referenciar o passo atual
+		 */
 		const steps = [ DESKTOP, TABLET, PHONE ] 
 		let index = 0
 
-		/* Repeating the step change */
+		/**
+		 * Aqui o método setInterval() é usado para criar um loop, onde a função
+		 * this.changeStep() será executada uma vez à cada segundo. Note que (++index % steps.length)
+		 * retornará valores que sempre representarão índices do array de passos da animação
+		 */
 		setInterval(() => this.changeStep(steps[++index % steps.length]), 1000)
 	}
 
 	render() {
 
-		// Converting to the rotation units (deg)
+		/**
+		 * Para modificar a rotação do elemento, usaremos o atributo transform. O mesmo
+		 * aceita valores com o sufixo 'deg', logo, precisaremos fazer a transposição
+		 * dos valores, como recomenda a documentação do react:
+		 * https://facebook.github.io/react-native/docs/animations.html
+		 */
 		const boundsRotation = this.state.boundsRotation.interpolate({
             inputRange: [0, 360],
             outputRange: ['0deg', '360deg']
         })
 
+		/**
+		 * Aqui, atribuiremos os valores animados aos elementos correspondentes. Note que
+		 * os elementos que suportam animação são os do tipo <Animated.View>, mas estes não
+		 * suportam estilização. Assim, usaremos os elements <Animated.View> apenas como 
+		 * parentes dos elementos estilizados, que receberão as bordas e cores.
+		 */
+
 		return (
 			<div>
-				{ /* BoundsAnimatedView */ }
+				{ /* Elemento responsável por animar as bordas do dispositivo */ }
 				<Animated.View style={{
 					width: this.state.boundsWidth,
 					height: this.state.boundsHeight,
 					transform: [{ rotate: boundsRotation }] 
 				}}>
 
-					{ /* BoundsDiv (It will fill the parent) */ }
+					{ /* Elemento que representa graficamente as bordas do dispositivo */ }
 					<div style={ STYLE }>
 
-						{ /* ScreenAnimatedView */ }
+						{ /* Animação da tela do dispositivo */ }
 						<Animated.View style={{
 							width: this.state.screenWidth,
 							height: this.state.screenHeight,
@@ -162,18 +272,18 @@ export default class DevicesAnim extends Component {
 							marginBottom: this.state.screenMarginBottom
 						}}>
 
-							{ /* ScreenDiv (It will fill the parent) */ }
+							{ /* Representação gráfica da tela do dispositivo */ }
 							<div style={ STYLE }/>
 
 						</Animated.View>
 
-						{ /* CircleAnimatedView */ }
+						{ /* Animação do botão do dispositivo */ }
 						<Animated.View style={{
 							width: this.state.circleSize,
 							height: this.state.circleSize,
 						}}>
 
-							{ /* CircleDiv (It will fill the parent) */ }
+							{ /* Representação gráfica do botão do dispositivo */ }
 							<div style={{ ...STYLE, borderRadius: '50%' }}/>
 
 						</Animated.View>
