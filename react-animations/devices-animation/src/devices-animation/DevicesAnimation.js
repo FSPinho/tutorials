@@ -31,6 +31,7 @@
  * centralizar tudo na tela)
  * 
  * Agora vamos a implementação do componente!
+ * 
  */
 
 
@@ -46,7 +47,7 @@ import { Animated, Easing } from 'react-native-web'
  * Tamanho do container da animação. Os dispositivos, desktop, tablet e celular terão suas dimensões
  * calculadas em relação a essa medida.
  */
-const SIZE = 240
+const SIZE = 480
 
 /**
  * Relação entre a altura e a largura dos dispositivos. É comum que as telas atuais apresentem
@@ -63,8 +64,9 @@ const TABLET = 'tablet'
 const PHONE = 'phone'
 
 /**
- * Estilo das divs que serão usadas na animação. Todas apresentam uma borda vermelha de 2 pixels, 
- * e terão as mesmas dimensões de seus elementos pais, que serão animados. Elas apresentam, também,
+ * Estilo das divs que serão usadas na animação. Todas têm posição absoluta, preenchendo todo
+ * o elemento pai, já que o elemento pai é quem será animado.
+ * Todas apresentam também, uma borda vermelha de 2 pixels. Elas apresentam, também,
  * um display flex, o que nos ajuda a distribuir e centralizar os elementos filhos verticalmente.
  * Estou supondo aqui que você já tenha um conhecimento de CSS e de flexbox
  */
@@ -72,7 +74,7 @@ const STYLE = {
 	position: 'absolute',
 	top: 0, bottom: 0, left: 0, right: 0,
 	border: '#F00 2px solid',
-	borderRadius: 8,
+	borderRadius: 16,
 	display: 'flex',
 	flexDirection: 'column', 
 	alignItems: 'center',
@@ -93,36 +95,36 @@ const ANIM_STEPS = {
 		boundsHeight: SIZE / RATIO,
 		boundsRotation: 0, 
 
-		screenWidth: SIZE * 0.95,
+		screenWidth: SIZE * 0.97,
 		screenHeight: SIZE / RATIO * 0.75,
 		screenMarginTop: 0,
-		screenMarginBottom: SIZE * 0.02,
+		screenMarginBottom: SIZE * 0.04,
 
-		circleSize: SIZE * 0.05, 
+		circleSize: SIZE * 0.06, 
 	},
 	[TABLET]: {
 		boundsWidth: SIZE / RATIO * 0.9,
-		boundsHeight: SIZE * 0.9,
+		boundsHeight: SIZE * 0.7,
 		boundsRotation: 90, 
 
 		screenWidth: SIZE / RATIO * 0.8,
-		screenHeight: SIZE * 0.7,
+		screenHeight: SIZE * 0.5,
+		screenMarginTop: SIZE * 0.04, 
+		screenMarginBottom: SIZE * 0.02, 
+
+		circleSize: SIZE * 0.05, 
+	},
+	[PHONE]: {
+		boundsWidth: SIZE / RATIO * 0.5,
+		boundsHeight: SIZE * 0.6,
+		boundsRotation: 0, 
+
+		screenWidth: SIZE / RATIO * 0.45,
+		screenHeight: SIZE * 0.45,
 		screenMarginTop: SIZE * 0.04, 
 		screenMarginBottom: SIZE * 0.02, 
 
 		circleSize: SIZE * 0.04, 
-	},
-	[PHONE]: {
-		boundsWidth: SIZE / RATIO * 0.6,
-		boundsHeight: SIZE * 0.6,
-		boundsRotation: 0, 
-
-		screenWidth: SIZE / RATIO * 0.54,
-		screenHeight: SIZE * 0.4,
-		screenMarginTop: SIZE * 0.04, 
-		screenMarginBottom: SIZE * 0.02, 
-
-		circleSize: SIZE * 0.05, 
 	},
 }
 
@@ -273,7 +275,7 @@ export default class DevicesAnim extends Component {
 						}}>
 
 							{ /* Representação gráfica da tela do dispositivo */ }
-							<div style={ STYLE }/>
+							<div style={{ ...STYLE, borderRadius: 0 }}/>
 
 						</Animated.View>
 
